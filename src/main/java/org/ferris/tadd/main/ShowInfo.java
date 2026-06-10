@@ -1,4 +1,4 @@
-package org.ferris.add.main;
+package org.ferris.tadd.main;
 
 public record ShowInfo(
           int id

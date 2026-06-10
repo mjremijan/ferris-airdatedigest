@@ -1,4 +1,4 @@
-package org.ferris.add.main;
+package org.ferris.tadd.main;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -31,6 +31,7 @@ public class TvMazeClient {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(URL))
                     .GET()
+                    .version(HttpClient.Version.HTTP_1_1)
                     .build();
 
             HttpResponse<String> response =

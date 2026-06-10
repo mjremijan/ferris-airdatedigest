@@ -1,4 +1,4 @@
-package org.ferris.add.main;
+package org.ferris.tadd.main;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import java.time.LocalDate;
 import java.util.stream.Stream;
-import org.ferris.add.main.ChannelInfo.Type;
+import org.ferris.tadd.main.ChannelInfo.Type;
 
 public class TvMazeParser {
 
