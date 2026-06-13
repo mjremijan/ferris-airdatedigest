@@ -12,6 +12,12 @@ import org.ferris.tadd.main.ChannelInfo.Type;
 
 public class TvMazeParser {
 
+    protected Config config;
+    
+    public TvMazeParser(Config config) {
+        this.config = config;
+    }
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     public Stream<Airing> streamUpcomingEpisodes(String json) throws Exception {
@@ -104,13 +110,13 @@ public class TvMazeParser {
     }
 
     private EpisodeInfo parseEpisodeInfo(JsonNode episode) {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate cutoff = tomorrow.plusDays(2);
+        LocalDate start = config.isShowsForToday() ? LocalDate.now() : LocalDate.now().plusDays(1);
+        LocalDate cutoff = start.plusDays(config.getShowsForDays() - 1);
         
         // air date
         String airDateText = asStringRequired(episode, "airdate");
         LocalDate airDate = LocalDate.parse(airDateText);
-        if (airDate.isBefore(tomorrow) || airDate.isAfter(cutoff)) {
+        if (airDate.isBefore(start) || airDate.isAfter(cutoff)) {
             return null;
         }
 

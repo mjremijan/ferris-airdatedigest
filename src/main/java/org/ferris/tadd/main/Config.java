@@ -13,6 +13,8 @@ public class Config {
    
     protected String resendApiKey;
     protected boolean sendEmail;
+    protected boolean showsForToday;
+    protected int showsForDays;
 
     public String getResendApiKey() {
         return resendApiKey;
@@ -20,6 +22,14 @@ public class Config {
 
     public boolean isSendEmail() {
         return sendEmail;
+    }
+    
+    public int getShowsForDays() {
+        return showsForDays;
+    }
+    
+    public boolean isShowsForToday() {
+        return showsForToday;
     }
     
     public Config() {
@@ -69,5 +79,21 @@ public class Config {
         sendEmail = "true".equalsIgnoreCase(
             props.getProperty("sendEmail", "").trim()
         );
+        
+        showsForToday = "true".equalsIgnoreCase(
+            props.getProperty("showsForToday", "").trim()
+        );
+        
+        showsForDays = 3;
+        {
+            try {
+                int i = Integer.parseInt(props.getProperty("showsForDays", "").trim());
+                if (i > 0 && i <=14) {
+                    showsForDays = i;
+                }
+            } catch (Exception ignore){}
+        }
     }
+
+
 }

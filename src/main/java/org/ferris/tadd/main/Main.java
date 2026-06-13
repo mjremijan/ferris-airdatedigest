@@ -18,14 +18,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
+        System.out.printf("Creating Conf%n");
+        Config config = new Config();
+        
         System.out.printf("Creating TvMazeClient%n");
         TvMazeClient client = new TvMazeClient();
         
         System.out.printf("Creating TvMazeParser%n");
-        TvMazeParser parser = new TvMazeParser();
-        
-        System.out.printf("Creating Conf%n");
-        Config config       = new Config();
+        TvMazeParser parser = new TvMazeParser(config);
+       
         
         DateTimeFormatter formatter
             = DateTimeFormatter.ofPattern("EEEE, MMMM d");
