@@ -1,11 +1,15 @@
 package org.ferris.tadd.main;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 
 public class TvMazeClient {
 
@@ -26,18 +30,49 @@ public class TvMazeClient {
 
         // read from api?
         if (contents == null) {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(URL))
-                    .GET()
-                    .version(HttpClient.Version.HTTP_1_1)
-                    .build();
-
-            HttpResponse<String> response =
-                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofMinutes(20))
+                .build()
+            ;
             
-            contents = response.body();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL))
+                .timeout(Duration.ofMinutes(20))
+                .version(HttpClient.Version.HTTP_1_1)
+                .GET()
+                .build();
+
+            HttpResponse<InputStream> response =
+                client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            
+            // 
+            Path outPath = Path.of(System.getProperty("java.io.tmpdir"), "tadd-tvmaze-full.json");
+            long start = System.nanoTime();
+            try (
+                InputStream in = response.body();
+                OutputStream out = Files.newOutputStream(
+                    outPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING 
+                )
+            ) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                int cnt = 0;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    System.out.printf("%d Read %d bytes%n", ++cnt, bytesRead);
+                    out.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                Duration elapsed = Duration.ofNanos(System.nanoTime() - start);
+
+                long minutes = elapsed.toMinutes();
+                long seconds = elapsed.minusMinutes(minutes).toSeconds();
+
+                System.out.printf("Elapsed time: %d minutes, %d seconds%n",
+                    minutes,
+                    seconds);    
+            }
+
+            contents = Files.readString(outPath);
         }
         return contents;
     }
